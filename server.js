@@ -6,9 +6,28 @@ const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const AdmZip = require('adm-zip');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// ── Rate limiters ─────────────────────────────────────────────────────────────
+
+const uploadLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many uploads. Please try again in 15 minutes.' },
+});
+
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please slow down.' },
+});
 
 // Directory to store uploaded sites
 const SITES_DIR = process.env.UPLOAD_DIR_OVERRIDE
@@ -70,7 +89,7 @@ app.use('/sites', express.static(SITES_DIR));
 
 // ── API: Upload endpoint ──────────────────────────────────────────────────────
 
-app.post('/api/upload', upload.array('files', 100), (req, res) => {
+app.post('/api/upload', uploadLimiter, upload.array('files', 100), (req, res) => {
   const files = req.files;
   if (!files || files.length === 0) {
     return res.status(400).json({ error: 'No files uploaded.' });
@@ -123,7 +142,7 @@ app.post('/api/upload', upload.array('files', 100), (req, res) => {
 
 // ── API: List all sites ───────────────────────────────────────────────────────
 
-app.get('/api/sites', (_req, res) => {
+app.get('/api/sites', apiLimiter, (_req, res) => {
   try {
     const entries = fs.readdirSync(SITES_DIR, { withFileTypes: true });
     const sites = [];
@@ -143,7 +162,7 @@ app.get('/api/sites', (_req, res) => {
 
 // ── Preview page ──────────────────────────────────────────────────────────────
 
-app.get('/preview/:siteId', (req, res) => {
+app.get('/preview/:siteId', apiLimiter, (req, res) => {
   const siteId = sanitiseSiteId(req.params.siteId);
   if (!siteId) return res.status(400).send('Invalid site ID.');
 
