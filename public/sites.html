@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Sites – Dig</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="page">
+    <div class="page-header">
+      <h1>All uploaded sites</h1>
+      <a class="btn btn-primary" href="/">+ Upload new</a>
+    </div>
+
+    <div id="sitesContainer">
+      <div class="sites-table">
+        <p class="empty-state" id="loadingMsg">Loading…</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    'use strict';
+
+    (async function () {
+      const container = document.getElementById('sitesContainer');
+
+      function escHtml(str) {
+        const div = document.createElement('div');
+        div.appendChild(document.createTextNode(str));
+        return div.innerHTML;
+      }
+
+      function timeAgo(iso) {
+        const diff = Date.now() - new Date(iso).getTime();
+        const mins = Math.floor(diff / 60000);
+        if (mins < 1) return 'just now';
+        if (mins < 60) return `${mins}m ago`;
+        const hrs = Math.floor(mins / 60);
+        if (hrs < 24) return `${hrs}h ago`;
+        const days = Math.floor(hrs / 24);
+        return `${days}d ago`;
+      }
+
+      try {
+        const res = await fetch('/api/sites');
+        const sites = await res.json();
+
+        if (!sites.length) {
+          container.innerHTML = `
+            <div class="sites-table">
+              <div class="empty-state">
+                <span style="font-size:2.5rem">🕳️</span>
+                <p>No sites uploaded yet. <a href="/" style="color:var(--accent)">Upload one!</a></p>
+              </div>
+            </div>`;
+          return;
+        }
+
+        const rows = sites.map(s => {
+          const previewUrl = `/preview/${escHtml(s.siteId)}`;
+          const directUrl = `/sites/${escHtml(s.siteId)}/${escHtml(s.entryPoint)}`;
+          return `<tr>
+            <td><a href="${previewUrl}">${escHtml(s.siteId.slice(0, 8))}…</a></td>
+            <td><a href="${directUrl}" target="_blank">${escHtml(s.entryPoint)}</a></td>
+            <td title="${new Date(s.uploadedAt).toLocaleString()}">${timeAgo(s.uploadedAt)}</td>
+            <td>
+              <a class="btn btn-primary" style="font-size:0.8rem;padding:5px 12px" href="${previewUrl}">Preview</a>
+            </td>
+          </tr>`;
+        }).join('');
+
+        container.innerHTML = `
+          <div class="sites-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Site ID</th>
+                  <th>Entry point</th>
+                  <th>Uploaded</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>`;
+      } catch (_) {
+        container.innerHTML = `
+          <div class="sites-table">
+            <div class="empty-state">
+              <p style="color:var(--error)">Failed to load sites. Please try again.</p>
+            </div>
+          </div>`;
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "name": "dig",
+  "version": "1.0.0",
+  "description": "Upload your websites and share them for review.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tobypaynter-ai/Dig.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/tobypaynter-ai/Dig/issues"
+  },
+  "homepage": "https://github.com/tobypaynter-ai/Dig#readme",
+  "dependencies": {
+    "adm-zip": "^0.5.16",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.3.1",
+    "multer": "^2.1.1",
+    "uuid": "^13.0.0"
+  }
+}

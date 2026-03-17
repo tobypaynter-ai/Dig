@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dig – Share Your Website for Review</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <h1>Dig</h1>
+      <p class="tagline">Upload your website and share it for review in seconds.</p>
+    </header>
+
+    <main>
+      <div class="upload-card" id="uploadCard">
+        <div class="drop-zone" id="dropZone">
+          <div class="drop-icon">📁</div>
+          <p class="drop-label">Drop your files here</p>
+          <p class="drop-sub">or</p>
+          <label class="btn btn-primary" for="fileInput">Choose files</label>
+          <input type="file" id="fileInput" multiple accept=".html,.htm,.css,.js,.mjs,.json,.svg,.ico,.png,.jpg,.jpeg,.gif,.webp,.avif,.woff,.woff2,.ttf,.otf,.eot,.mp4,.webm,.ogg,.mp3,.wav,.pdf,.txt,.xml,.map,.zip" hidden>
+          <p class="drop-hint">Supports individual files or a <strong>.zip</strong> of your whole site (max 50 MB).</p>
+        </div>
+
+        <div class="file-list" id="fileList" hidden>
+          <h3>Selected files</h3>
+          <ul id="fileListItems"></ul>
+          <div class="actions">
+            <button class="btn btn-secondary" id="clearBtn">Clear</button>
+            <button class="btn btn-primary" id="uploadBtn">Upload &amp; Share →</button>
+          </div>
+        </div>
+
+        <div class="progress-panel" id="progressPanel" hidden>
+          <div class="spinner"></div>
+          <p>Uploading…</p>
+        </div>
+
+        <div class="result-panel" id="resultPanel" hidden>
+          <div class="result-icon">🎉</div>
+          <h2>Your site is live!</h2>
+          <p>Share this link with anyone who needs to review it:</p>
+          <div class="share-row">
+            <input type="text" id="shareUrl" readonly>
+            <button class="btn btn-primary" id="copyBtn">Copy</button>
+          </div>
+          <a class="btn btn-outline" id="previewBtn" target="_blank">Open preview ↗</a>
+          <button class="btn btn-secondary" id="uploadAnotherBtn">Upload another</button>
+        </div>
+
+        <div class="error-panel" id="errorPanel" hidden>
+          <div class="error-icon">⚠️</div>
+          <p id="errorMsg"></p>
+          <button class="btn btn-secondary" id="retryBtn">Try again</button>
+        </div>
+      </div>
+
+      <p class="sites-link"><a href="/sites.html">View all uploaded sites →</a></p>
+    </main>
+  </div>
+
+  <script src="/upload.js"></script>
+</body>
+</html>
